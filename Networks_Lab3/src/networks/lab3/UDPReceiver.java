@@ -20,4 +20,3 @@ public class UDPReceiver {
 		int port = rcvPkt.getPort();					
 	}
 }
-
