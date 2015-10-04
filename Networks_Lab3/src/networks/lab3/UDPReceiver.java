@@ -30,7 +30,7 @@ public class UDPReceiver {
 
 		String[] dataParts = bytesAsString.split("\\|"); // Split string based on pipe character
 		
-		if(dataParts[0].equals("initial")){ // If received data is the inital data
+		if(dataParts[0].equals("initial")){ // If received data is the initial data
 			System.out.println("Handling initial String.");
 			this.windowSize = Integer.parseInt(dataParts[1]);
 			this.maxSequenceNum = Integer.parseInt(dataParts[2]);
