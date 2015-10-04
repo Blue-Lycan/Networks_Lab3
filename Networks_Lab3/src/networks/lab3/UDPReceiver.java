@@ -43,6 +43,7 @@ public class UDPReceiver {
 		}
 	}
 	public static void main(String args[])throws Exception
+	
 	{
 		UDPReceiver receiver = new UDPReceiver();
 		
