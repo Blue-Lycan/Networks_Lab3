@@ -5,18 +5,49 @@ import java.net.*;
 
 public class UDPReceiver {
 	
-	public static void main(String args[])throws Exception
-	{
-		DatagramSocket receiverSocket = new DatagramSocket(9876);
+	private int windowSize;
+	private int maxSequenceNum;
+	private DatagramSocket receiverSocket;
+	
+	UDPReceiver() throws Exception{
+		this.receiverSocket = new DatagramSocket(9876);
+	}
+	
+	public void listenForData() throws Exception{
 		
 		byte[] rcvData = new byte[1024];
-		
 		DatagramPacket rcvPkt = new DatagramPacket(rcvData, rcvData.length);
+		System.out.println("Waiting for data...");
+		this.receiverSocket.receive(rcvPkt);
+		System.out.println("I received data!");
+		processData(rcvData);
+	}
+	
+	private void processData(byte[] data){
 		
-		receiverSocket.receive(rcvPkt);
+		String bytesAsString = new String(data);
+		System.out.println("String from bytes is: " + bytesAsString);
+
+		String[] dataParts = bytesAsString.split("\\|"); // Split string based on pipe character
 		
-		InetAddress IPAddress = rcvPkt.getAddress();
+		if(dataParts[0].equals("initial")){ // If received data is the inital data
+			System.out.println("Handling initial String.");
+			this.windowSize = Integer.parseInt(dataParts[1]);
+			this.maxSequenceNum = Integer.parseInt(dataParts[2]);
+		}
+		else if(dataParts[0].equals("data")){
+			// Handle data after initial
+		}
+		else{
 			
-		int port = rcvPkt.getPort();					
+		}
+	}
+	public static void main(String args[])throws Exception
+	{
+		UDPReceiver receiver = new UDPReceiver();
+		
+		while(true){
+			receiver.listenForData();
+		}
 	}
 }
