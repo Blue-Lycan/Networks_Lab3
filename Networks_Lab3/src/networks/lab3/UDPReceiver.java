@@ -53,7 +53,7 @@ public class UDPReceiver {
 		
 		System.out.print("[");
 		for (int i = 0; i < window.length; i++){
-			System.out.println(window[i] + ",");
+			System.out.print(window[i] + ",");
 		}
 		System.out.print("]");
 	}
