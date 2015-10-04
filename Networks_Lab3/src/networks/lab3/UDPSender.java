@@ -30,6 +30,7 @@ public class UDPSender {
 		this.getUserInput();
 	}
 	
+	// Get user input
 	private void getUserInput(){
 		Scanner sc = new Scanner(System.in);
 	
