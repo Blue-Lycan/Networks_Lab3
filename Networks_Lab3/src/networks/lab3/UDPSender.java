@@ -8,14 +8,13 @@ package networks.lab3;
  * Sender class of a UDP selective repeat implementation.
  * 
  * This class first sends initial data to receiver to agree
- * upon a window size and maximum sequence number. For this implementation,
+ * upon a window size and maximum sequence number. Additionally,
  * desired packets to be dropped can be added to simulate a real-world situation.
  * 
  * The data being sent to the receiver will either be the initial data or the regular
  * data containing a sequence number.
  */
 
-import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -25,8 +24,9 @@ public class UDPSender {
 	private int windowSize;
 	private int maxSequenceNum;
 	private int[] packetsDropped;
-	private DatagramSocket senderSocket;
-	private InetAddress HostIPAddress;
+	private int[] packetWindow;
+	private DatagramSocket senderSocket; // This class's socket.
+	private InetAddress HostIPAddress; //
 	
 	UDPSender() throws Exception {
 		
