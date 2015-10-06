@@ -28,7 +28,7 @@ public class UDPReceiver {
 		processData(rcvData);
 	}
 	
-	private void processData(byte[] data){
+	private void processData(byte[] data) throws Exception{
 		
 		String bytesAsString = new String(data);
 		System.out.println("String from bytes is: " + bytesAsString);
@@ -39,7 +39,7 @@ public class UDPReceiver {
 			System.out.println("Handling initial String.");
 			this.windowSize = Integer.parseInt(dataParts[1]);
 			this.maxSequenceNum = Integer.parseInt(dataParts[2]);
-			// sendAck(-1)
+			this.sendAck(-1);
 		}
 		else if(dataParts[0].equals("data")){
 			// Handle data after initial
@@ -60,7 +60,7 @@ public class UDPReceiver {
 			ack = buildAck(i);
 			stuffToReturn = ack.getBytes(); // Converting built ack into a byte array
 			DatagramPacket packetToSend = new DatagramPacket(
-					stuffToReturn, stuffToReturn.length, this.senderIP, 9876); // Configure packet to be sent
+					stuffToReturn, stuffToReturn.length, this.senderIP, this.senderPort); // Configure packet to be sent
 			this.receiverSocket.send(packetToSend); // Send configured initial packet
 		}
 		else{
