@@ -1,5 +1,7 @@
 package networks.lab3;
 
+import java.io.IOException;
+
 /**
  * @author Drew Antonich & Anthony Schwartz
  * 
@@ -74,9 +76,10 @@ public class UDPSender {
 				testByteArray, testByteArray.length, this.HostIPAddress, 9876); // Configure packet to be sent
 		
 		System.out.println("Send window size and maximum"
-				+ "sequence number to the receiver");
+				+ " sequence number to the receiver");
 		
 		this.senderSocket.send(packetToSend); // Send packet
+		this.enterReceiveState(); // Enter state to receive data
 	}
 	
 	/**
@@ -105,6 +108,27 @@ public class UDPSender {
 		return regularString;
 	}
 	
+	private void enterReceiveState() throws Exception{
+		byte[] rcvData = new byte[1024];
+		DatagramPacket rcvPkt = new DatagramPacket(rcvData, rcvData.length);
+		this.senderSocket.receive(rcvPkt);
+		this.processData(rcvData);
+	}
+	
+	private void processData(byte[] data){
+		String bytesAsString = new String(data);
+		System.out.println("String from receiver is: " + bytesAsString);
+
+		String[] dataParts = bytesAsString.split("\\|"); // Split string based on pipe character
+		
+		if(dataParts[0].equals("initial")){ // If received data is the initial data
+			// Receiver sent ack for initial packet
+			System.out.println("The sender recieved conformation from the sender.");
+		}
+		else if(dataParts[0].equals("data")){
+			// Handle data after initial
+		}
+	}
 	public static void main(String args[]) throws Exception
 		
 	{

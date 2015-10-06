@@ -28,7 +28,7 @@ public class UDPReceiver {
 		processData(rcvData);
 	}
 	
-	private void processData(byte[] data){
+	private void processData(byte[] data)throws Exception{
 		
 		String bytesAsString = new String(data);
 		System.out.println("String from bytes is: " + bytesAsString);
@@ -36,10 +36,10 @@ public class UDPReceiver {
 		String[] dataParts = bytesAsString.split("\\|"); // Split string based on pipe character
 		
 		if(dataParts[0].equals("initial")){ // If received data is the initial data
-			System.out.println("Handling initial String.");
+			System.out.println("Got initial data from sender. Setting my variables.");
 			this.windowSize = Integer.parseInt(dataParts[1]);
 			this.maxSequenceNum = Integer.parseInt(dataParts[2]);
-			// sendAck(-1)
+			this.sendAck(-1); // Send ack to sender for the initial data
 		}
 		else if(dataParts[0].equals("data")){
 			// Handle data after initial
@@ -55,12 +55,11 @@ public class UDPReceiver {
 		String ack = "";
 		byte[] stuffToReturn;
 		
-		if(i == -1){ // If act is for the initial data
-			//send initial ack
-			ack = buildAck(i);
+		if(i == -1){ // If ack is for the initial data
+			ack = buildAck(i); // Build the ack
 			stuffToReturn = ack.getBytes(); // Converting built ack into a byte array
 			DatagramPacket packetToSend = new DatagramPacket(
-					stuffToReturn, stuffToReturn.length, this.senderIP, 9876); // Configure packet to be sent
+					stuffToReturn, stuffToReturn.length, this.senderIP, this.senderPort); // Configure packet to be sent
 			this.receiverSocket.send(packetToSend); // Send configured initial packet
 		}
 		else{
