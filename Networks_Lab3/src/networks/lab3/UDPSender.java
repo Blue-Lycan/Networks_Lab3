@@ -30,9 +30,10 @@ public class UDPSender {
 	
 	UDPSender() throws Exception {
 		
-		this.getUserInput();
 		this.senderSocket = new DatagramSocket(9877); // Initialize socket for sender
 		this.HostIPAddress = InetAddress.getByName("localhost"); // Host IP Address
+		this.getUserInput();
+		
 	}
 	
 	// Get user input
@@ -71,6 +72,10 @@ public class UDPSender {
 		byte[] testByteArray = this.buildInitialData().getBytes(); // Build initial data and convert to bytes
 		DatagramPacket packetToSend = new DatagramPacket(
 				testByteArray, testByteArray.length, this.HostIPAddress, 9876); // Configure packet to be sent
+		
+		System.out.println("Send window size and maximum"
+				+ "sequence number to the receiver");
+		
 		this.senderSocket.send(packetToSend); // Send packet
 	}
 	
@@ -93,6 +98,11 @@ public class UDPSender {
 		System.out.println("The initial string is: " + initialString);
 		
 		return initialString;
+	}
+	
+	private String buildRegularData(int i){
+		String regularString = "data|" + i;
+		return regularString;
 	}
 	
 	public static void main(String args[]) throws Exception

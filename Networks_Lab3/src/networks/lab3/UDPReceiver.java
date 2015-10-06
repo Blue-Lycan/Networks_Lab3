@@ -8,6 +8,8 @@ public class UDPReceiver {
 	private int windowSize;
 	private int maxSequenceNum;
 	private DatagramSocket receiverSocket;
+	private int senderPort;
+	private InetAddress senderIP;
 	private String[] window;
 	
 	UDPReceiver() throws Exception{
@@ -21,6 +23,8 @@ public class UDPReceiver {
 		System.out.println("Waiting for data...");
 		this.receiverSocket.receive(rcvPkt);
 		System.out.println("I received data!");
+		this.senderPort = rcvPkt.getPort(); // Get the sender's port #
+		this.senderIP = rcvPkt.getAddress(); // Get the sender's IPAddress
 		processData(rcvData);
 	}
 	
@@ -35,6 +39,7 @@ public class UDPReceiver {
 			System.out.println("Handling initial String.");
 			this.windowSize = Integer.parseInt(dataParts[1]);
 			this.maxSequenceNum = Integer.parseInt(dataParts[2]);
+			// sendAck(-1)
 		}
 		else if(dataParts[0].equals("data")){
 			// Handle data after initial
@@ -43,6 +48,38 @@ public class UDPReceiver {
 			
 		}
 		
+	}
+	
+	private void sendAck(int i) throws IOException{
+		
+		String ack = "";
+		byte[] stuffToReturn;
+		
+		if(i == -1){ // If act is for the initial data
+			//send initial ack
+			ack = buildAck(i);
+			stuffToReturn = ack.getBytes(); // Converting built ack into a byte array
+			DatagramPacket packetToSend = new DatagramPacket(
+					stuffToReturn, stuffToReturn.length, this.senderIP, 9876); // Configure packet to be sent
+			this.receiverSocket.send(packetToSend); // Send configured initial packet
+		}
+		else{
+			//send ack for received packet
+//			DatagramPacket packetToSend = new DatagramPacket(
+//					stuffToReturn, stuffToReturn.length, this.senderIP, 9876); // Configure packet to be sent
+		}
+	}
+	
+	private String buildAck(int i){
+		
+		String acknowledgement = "";
+		if (i == -1){ // If building inital ack
+			acknowledgement = "initial|1";
+		}
+		else {
+			// build ack for a regular sequence number
+		}
+		return acknowledgement;
 	}
 	
 	public void DropPacket(){
