@@ -2,6 +2,7 @@ package networks.lab3;
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 public class UDPReceiver {
 	
@@ -11,6 +12,7 @@ public class UDPReceiver {
 	private int senderPort;
 	private InetAddress senderIP;
 	private String[] window;
+	ArrayList<String> curWindow = new ArrayList<String>();
 	
 	UDPReceiver() throws Exception{
 		this.receiverSocket = new DatagramSocket(9876);
@@ -42,7 +44,7 @@ public class UDPReceiver {
 			this.sendAck(-1);
 		}
 		else if(dataParts[0].equals("data")){
-			// Handle data after initial
+			
 		}
 		else{
 			
@@ -50,12 +52,46 @@ public class UDPReceiver {
 		
 	}
 	
+	private String newDataWin(int sequenceNumber){
+		if(sequenceNumber == -1){
+			String begString = "initial|"; 
+			begString += (Integer.toString(this.windowSize) + "|");
+			begString += (Integer.toString(this.maxSequenceNum) + "|");
+			return begString;		
+		}
+		else {			
+			String updatedString = "data|" + sequenceNumber;
+			return updatedString;
+		}
+	}
+	
+	//updates Window with new data and prints out the current window view
+	private void updateWindow(){		
+		curWindow.add(newDataWin(this.maxSequenceNum)); //Adds initial data
+		System.out.print(curWindow); //printing initial window
+		
+		//Continues to 
+		while(!(curWindow.get(0) == "-" && curWindow.get(this.maxSequenceNum) == "-")){
+		if(curWindow.contains(maxSequenceNum)){
+			curWindow.remove(0);
+			curWindow.add("-");			
+		}
+		
+		else{
+			curWindow.remove(0);
+			curWindow.add(curWindow.get(4) + 1);
+			System.out.print(curWindow);
+		}
+		break;
+		}
+	}
+	
 	private void sendAck(int i) throws IOException{
 		
 		String ack = "";
 		byte[] stuffToReturn;
 		
-		if(i == -1){ // If act is for the initial data
+		if(i == -1){ // If ack is for the initial data
 			//send initial ack
 			ack = buildAck(i);
 			stuffToReturn = ack.getBytes(); // Converting built ack into a byte array
@@ -64,9 +100,11 @@ public class UDPReceiver {
 			this.receiverSocket.send(packetToSend); // Send configured initial packet
 		}
 		else{
-			//send ack for received packet
-//			DatagramPacket packetToSend = new DatagramPacket(
-//					stuffToReturn, stuffToReturn.length, this.senderIP, 9876); // Configure packet to be sent
+			ack = buildAck(i);
+			stuffToReturn = ack.getBytes();
+			DatagramPacket packetToSend = new DatagramPacket(
+					stuffToReturn, stuffToReturn.length, this.senderIP, this.senderPort); // Configure packet to be sent
+			this.receiverSocket.send(packetToSend); // Send configured initial packet
 		}
 	}
 	
@@ -78,7 +116,7 @@ public class UDPReceiver {
 		}
 		else {
 			// build ack for a regular sequence number
-			acknowledgement = "data";
+			acknowledgement = "data|" + i ;
 		}
 		return acknowledgement;
 	}
